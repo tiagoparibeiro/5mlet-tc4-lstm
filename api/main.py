@@ -15,8 +15,8 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
 
 # 3. Junta o diretório raiz com o caminho relativo desejado
-MODEL_PATH = os.path.join(PROJECT_ROOT, "notebooks", "melhor_modelo_lstm.keras")
-SCALER_PATH = os.path.join(PROJECT_ROOT, "notebooks", "melhor_scaler_minmax.joblib")
+MODEL_PATH = os.path.join(PROJECT_ROOT, "model", "melhor_modelo_lstm.keras")
+SCALER_PATH = os.path.join(PROJECT_ROOT, "model", "melhor_scaler_minmax.joblib")
 
 # Exemplo de como usar (para visualização)
 print(f"MODEL_PATH: {MODEL_PATH}")
