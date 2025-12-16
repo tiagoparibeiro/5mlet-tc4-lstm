@@ -35,11 +35,11 @@ app = FastAPI(
 model = None
 scaler = None
 
-class FeaturesVector(BaseModel):
-    root: list[float]
+#class FeaturesVector(BaseModel):
+#    root: list[float]
 
 class PredictionInput(BaseModel):
-    data: list[FeaturesVector]
+    data: list[list[float]]
 
     @property
     def window_size_ok(self):
@@ -76,7 +76,7 @@ def predict_next_step(input_data: PredictionInput):
         )
 
     try:
-        input_2d = np.array([item.root for item in input_data.data])
+        input_2d = np.array(input_data.data)
 
         if input_2d.shape[1] != N_FEATURES:
             raise HTTPException(
