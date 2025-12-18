@@ -33,9 +33,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 6. Copiar o diretório da API e seus conteúdos.
 COPY api /app/api
 
-# 7. Copiar o diretório de modelos (os ativos treinados: .keras e .joblib).
-#    O caminho 'model' deve coincidir com o MODEL_PATH e SCALER_PATH na sua API.
-COPY model /app/model
+# 7. Criar a pasta onde o modelo será baixado (vazia por enquanto)
+RUN mkdir -p /app/model
 
 # 8. Copiar outros arquivos essenciais (como o README, se necessário)
 # COPY README.md /app/README.md
