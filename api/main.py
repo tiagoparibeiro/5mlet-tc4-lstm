@@ -32,7 +32,7 @@ def download_assets():
 
 
 # Exemplo de como usar (para visualização)
-print(f"MODEL_PATH: {MODEL_PATH}")
+print(f"MODEL_PATH: {LOCAL_MODEL_DIR}")
 
 WINDOW_SIZE = 30
 WINDOW_SIZE = 30
@@ -63,7 +63,7 @@ async def startup_event():
     global model, scaler
     try:
         model_path, scaler_path = download_assets() # Primeiro garante o download
-        model = tf.keras.models.load_model(model_path)
+        model = load_model(model_path)
         scaler = joblib.load(scaler_path)
         print("Ativos carregados com sucesso do Hugging Face!")
     except Exception as e:
