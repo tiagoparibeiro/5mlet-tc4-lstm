@@ -50,7 +50,7 @@ EXPOSE 8000
 #     Usamos Gunicorn como um gerenciador de processos em produção,
 #     junto com Uvicorn workers, para maior robustez e paralelismo.
 #     O comando abaixo inicializa 4 workers (ajuste conforme o número de CPUs)
-CMD ["gunicorn", "api.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "api.main:app", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
 
 # ALTERNATIVA SIMPLES (para ambientes com poucos recursos ou testes):
 # CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
