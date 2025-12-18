@@ -6,17 +6,30 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, RootModel
 from tensorflow.keras.models import load_model
+from huggingface_hub import hf_hub_download
 
-## 1. Obtém o caminho absoluto do arquivo atual
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Configurações do Hugging Face
+REPO_ID = "tiagoparibeiro/melhor_modelo_lstm" # Substitua pelo seu
+MODEL_FILENAME = "melhor_modelo_lstm.keras"
+SCALER_FILENAME = "melhor_scaler_minmax.joblib"
 
-# 2. Navega para o diretório pai (cd ..)
-#    Se o script está em 'api/', o diretório pai é a raiz do projeto
-PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
+# Caminhos locais onde o Render/Docker vai salvar
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOCAL_MODEL_DIR = os.path.join(BASE_DIR, "model")
 
-# 3. Junta o diretório raiz com o caminho relativo desejado
-MODEL_PATH = os.path.join(PROJECT_ROOT, "model", "melhor_modelo_lstm.keras")
-SCALER_PATH = os.path.join(PROJECT_ROOT, "model", "melhor_scaler_minmax.joblib")
+
+# Função para garantir que os arquivos existem
+def download_assets():
+    if not os.path.exists(LOCAL_MODEL_DIR):
+        os.makedirs(LOCAL_MODEL_DIR)
+
+    # Baixa o modelo
+    model_path = hf_hub_download(repo_id=REPO_ID, filename=MODEL_FILENAME, local_dir=LOCAL_MODEL_DIR)
+    # Baixa o scaler
+    scaler_path = hf_hub_download(repo_id=REPO_ID, filename=SCALER_FILENAME, local_dir=LOCAL_MODEL_DIR)
+
+    return model_path, scaler_path
+
 
 # Exemplo de como usar (para visualização)
 print(f"MODEL_PATH: {MODEL_PATH}")
@@ -46,19 +59,15 @@ class PredictionInput(BaseModel):
         return len(self.data) == WINDOW_SIZE
 
 @app.on_event("startup")
-def load_assets():
-    """Carrega o modelo e o scaler na inicialização da API."""
+async def startup_event():
     global model, scaler
     try:
-        model = load_model(MODEL_PATH)
-        print(f"Modelo carregado com sucesso de: {MODEL_PATH}")
-
-        scaler = joblib.load(SCALER_PATH)
-        print(f"Scaler carregado com sucesso de : {SCALER_PATH}")
-
+        model_path, scaler_path = download_assets() # Primeiro garante o download
+        model = tf.keras.models.load_model(model_path)
+        scaler = joblib.load(scaler_path)
+        print("Ativos carregados com sucesso do Hugging Face!")
     except Exception as e:
-        print(f"Erro ao carregar modelo: {e}")
-        raise RuntimeError(f"Erro ao carregar modelo ou scaler: {e}")
+        print(f"Erro no startup: {e}")
 
 @app.get("/health", tags=["Monitoring"])
 def get_health():

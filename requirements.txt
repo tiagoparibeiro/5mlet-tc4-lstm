@@ -11,3 +11,4 @@ pydantic
 requests
 seaborn
 gunicorn
+huggingface_hub
